@@ -7,7 +7,7 @@ Node.js + Express + SQLite backend for a Michigan party store point-of-sale syst
 ## Quick Start (Windows)
 
 ```cmd
-cd C:\Users\jwiz1214\Desktop\pickngo-pos
+cd C:\Users\17343\Desktop\pickngo-pos
 copy .env.example .env
 npm install
 npm start
@@ -202,7 +202,7 @@ POST /api/mlcc/sync
 ## Push to GitHub
 
 ```cmd
-cd C:\Users\jwiz1214\Desktop\pickngo-pos
+cd C:\Users\17343\Desktop\pickngo-pos
 git init
 git add .
 git commit -m "Initial backend: Express + SQLite POS for Pick-N-Go"
