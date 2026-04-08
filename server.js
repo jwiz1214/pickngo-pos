@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { getDb } = require('./database');
@@ -39,6 +40,9 @@ app.use('/api/sales',      require('./routes/sales'));
 app.use('/api/promotions', require('./routes/promotions'));
 app.use('/api/settings',   require('./routes/settings'));
 app.use('/api/mlcc',       require('./routes/mlcc'));
+
+// Serve frontend
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // 404 handler
 app.use((req, res) => {
