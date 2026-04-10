@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spark — AI Life & Relationship Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #08060F;
+  --card: #181428;
+  --card2: #1E1A30;
+  --text: #F5F0FF;
+  --muted: #9B93B8;
+  --border: #2A2440;
+  --fire: linear-gradient(135deg, #FF6B2B, #FFB830, #FF3D6B);
+  --fire-solid: #FF6B2B;
+  --rose: linear-gradient(135deg, #FF3D6B, #FF6B9D);
+  --rose-solid: #FF3D6B;
+  --violet: linear-gradient(135deg, #8B5CF6, #A78BFA);
+  --violet-solid: #8B5CF6;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Screens ── */
+.screen { display: none; flex-direction: column; height: 100%; overflow-y: auto; }
+.screen.active { display: flex; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── Buttons ── */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: opacity .15s, transform .1s;
+}
+.btn:active { transform: scale(.97); opacity: .85; }
+.btn-primary { background: var(--fire); color: #fff; }
+.btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+.btn-ghost { background: var(--card2); color: var(--text); }
+.btn-social { background: var(--card2); color: var(--text); border: 1.5px solid var(--border); font-weight: 600; }
+.btn-sm { padding: 10px 16px; font-size: 13px; border-radius: 10px; width: auto; }
+
+/* ── Inputs ── */
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-group label { font-size: 13px; font-weight: 600; color: var(--muted); }
+input, select, textarea {
+  background: var(--card2); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 13px 14px; color: var(--text);
+  font-family: inherit; font-size: 15px; outline: none; width: 100%;
+  transition: border-color .15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--fire-solid); }
+select option { background: var(--card2); }
+textarea { resize: none; }
+
+/* ── Divider ── */
+.divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ─────────────────────────────────────────
+   LANDING
+───────────────────────────────────────── */
+#screen-landing {
+  padding: 48px 24px 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+.landing-logo {
+  width: 72px; height: 72px; border-radius: 20px;
+  background: var(--fire);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(255,107,43,.35);
+}
+.landing-title {
+  font-size: 52px; font-weight: 800; letter-spacing: -1px;
+  background: var(--fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1; margin-bottom: 10px;
+}
+.landing-tagline { font-size: 16px; font-weight: 600; color: var(--muted); margin-bottom: 10px; }
+.landing-desc { font-size: 14px; color: var(--muted); text-align: center; max-width: 300px; line-height: 1.6; margin-bottom: 36px; }
+.landing-btns { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 40px; }
+.feature-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+.feature-tile {
+  background: var(--card); border-radius: 14px; padding: 14px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border: 1px solid var(--border); text-align: center;
+}
+.tile-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--fire); display: flex; align-items: center; justify-content: center;
+}
+.tile-icon.rose { background: var(--rose); }
+.tile-icon.violet { background: var(--violet); }
+.tile-label { font-size: 11px; font-weight: 600; color: var(--muted); line-height: 1.3; }
+
+/* ─────────────────────────────────────────
+   AUTH (SIGNUP / LOGIN)
+───────────────────────────────────────── */
+.auth-screen { padding: 0; }
+.auth-header {
+  padding: 20px 24px 0;
+  display: flex; align-items: center; gap: 14px;
+}
+.back-btn {
+  width: 38px; height: 38px; border-radius: 10px; background: var(--card2);
+  border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.auth-title { font-size: 20px; font-weight: 800; }
+.auth-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.auth-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+.step-indicators { display: flex; gap: 6px; margin-bottom: 4px; }
+.step-dot { height: 4px; border-radius: 2px; flex: 1; background: var(--border); transition: background .2s; }
+.step-dot.active { background: var(--fire-solid); }
+
+/* Plan cards */
+.plan-cards { display: flex; flex-direction: column; gap: 10px; }
+.plan-card {
+  background: var(--card2); border-radius: 14px; padding: 16px;
+  border: 1.5px solid var(--border); cursor: pointer; transition: border-color .15s;
+  display: flex; align-items: center; gap: 12px;
+}
+.plan-card.selected { border-color: var(--fire-solid); }
+.plan-radio {
+  width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color .15s;
+}
+.plan-card.selected .plan-radio { border-color: var(--fire-solid); }
+.plan-radio-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--fire-solid); display: none; }
+.plan-card.selected .plan-radio-dot { display: block; }
+.plan-info { flex: 1; }
+.plan-name { font-size: 15px; font-weight: 700; }
+.plan-price { font-size: 13px; color: var(--muted); }
+.plan-badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; background: var(--fire); color: #fff; }
+
+/* ─────────────────────────────────────────
+   ONBOARDING
+───────────────────────────────────────── */
+#screen-onboarding {
+  padding: 48px 24px 40px;
+  align-items: center; justify-content: center; gap: 0;
+}
+.onboarding-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; text-align: center; }
+.onboarding-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; text-align: center; }
+.mode-cards { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+.mode-card {
+  border-radius: 20px; padding: 24px; cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  display: flex; align-items: center; gap: 16px;
+  border: none; text-align: left; width: 100%;
+}
+.mode-card:active { transform: scale(.97); }
+.mode-card.fire-card { background: var(--fire); box-shadow: 0 8px 32px rgba(255,107,43,.3); }
+.mode-card.rose-card { background: var(--rose); box-shadow: 0 8px 32px rgba(255,61,107,.3); }
+.mode-card.violet-card { background: var(--violet); box-shadow: 0 8px 32px rgba(139,92,246,.3); }
+.mode-card-icon { font-size: 32px; }
+.mode-card-info { flex: 1; }
+.mode-card-title { font-size: 18px; font-weight: 800; color: #fff; }
+.mode-card-desc { font-size: 13px; color: rgba(255,255,255,.8); margin-top: 2px; }
+
+/* ─────────────────────────────────────────
+   APP SHELL
+───────────────────────────────────────── */
+#screen-app {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+#screen-app.active { display: flex; }
+
+/* Top bar */
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px; flex-shrink: 0;
+}
+.top-bar-logo {
+  display: flex; align-items: center; gap: 8px;
+}
+.top-bar-logo .logo-mark {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--fire); display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.top-bar-logo .logo-name { font-size: 18px; font-weight: 800; }
+.top-bar-right { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px; background: var(--card2);
+  border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+/* Tab content */
+.tab-content { flex: 1; overflow: hidden; position: relative; }
+.tab-panel { display: none; height: 100%; overflow-y: auto; }
+.tab-panel.active { display: block; }
+
+/* Bottom nav */
+.bottom-nav {
+  display: flex; background: var(--card); border-top: 1px solid var(--border);
+  flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 10px 0; cursor: pointer; border: none; background: none;
+}
+.nav-icon { color: var(--muted); transition: color .15s; }
+.nav-label { font-size: 10px; font-weight: 600; color: var(--muted); transition: color .15s; font-family: inherit; }
+.nav-item.active .nav-icon,
+.nav-item.active .nav-label { color: var(--fire-solid); }
+
+/* ─────────────────────────────────────────
+   HOME TAB
+───────────────────────────────────────── */
+.home-hero {
+  border-radius: 0 0 24px 24px; padding: 24px 20px 28px; margin-bottom: 20px;
+}
+.hero-greeting { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.75); margin-bottom: 4px; }
+.hero-headline { font-size: 22px; font-weight: 800; color: #fff; line-height: 1.3; }
+.hero-mode-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.18); border-radius: 20px;
+  padding: 5px 12px; margin-top: 10px; font-size: 12px; font-weight: 700; color: #fff;
+}
+
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; margin-bottom: 12px;
+}
+.section-title { font-size: 16px; font-weight: 700; }
+.section-link { font-size: 13px; color: var(--fire-solid); font-weight: 600; cursor: pointer; }
+
+/* Daily tip */
+.daily-tip {
+  margin: 0 20px 20px; background: var(--card); border-radius: 16px;
+  padding: 16px; border: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.tip-label { font-size: 11px; font-weight: 700; color: var(--fire-solid); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.tip-text { font-size: 14px; font-weight: 600; line-height: 1.5; }
+.tip-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--fire); border-radius: 0 2px 2px 0; }
+
+/* Topic grid */
+.topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 20px; }
+.topic-card {
+  background: var(--card); border-radius: 14px; padding: 16px;
+  border: 1px solid var(--border); cursor: pointer; transition: transform .12s, border-color .12s;
+}
+.topic-card:active { transform: scale(.96); border-color: var(--fire-solid); }
+.topic-card-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--fire); display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+.topic-card-icon.rose { background: var(--rose); }
+.topic-card-icon.violet { background: var(--violet); }
+.topic-label { font-size: 13px; font-weight: 700; }
+
+/* Mode switcher row */
+.mode-switcher { padding: 0 20px 24px; }
+.mode-switcher-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.mode-btns { display: flex; gap: 8px; }
+.mode-btn {
+  flex: 1; padding: 10px 0; border-radius: 12px; border: 1.5px solid var(--border);
+  background: var(--card2); color: var(--muted); font-family: inherit; font-size: 12px;
+  font-weight: 700; cursor: pointer; transition: all .15s;
+}
+.mode-btn.active-fire { background: var(--fire); border-color: transparent; color: #fff; }
+.mode-btn.active-rose { background: var(--rose); border-color: transparent; color: #fff; }
+.mode-btn.active-violet { background: var(--violet); border-color: transparent; color: #fff; }
+
+/* ─────────────────────────────────────────
+   NOVA CHAT TAB
+───────────────────────────────────────── */
+#tab-nova { display: none; height: 100%; flex-direction: column; }
+#tab-nova.active { display: flex; }
+
+.coach-header {
+  padding: 16px 20px 12px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.coach-avatar {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--fire);
+  display: flex; align-items: center; justify-content: center; font-size: 20px; position: relative; flex-shrink: 0;
+}
+.online-dot {
+  position: absolute; bottom: 1px; right: 1px;
+  width: 10px; height: 10px; border-radius: 50%; background: #22C55E;
+  border: 2px solid var(--bg);
+}
+.coach-name { font-size: 16px; font-weight: 700; }
+.coach-status { font-size: 12px; color: #22C55E; font-weight: 600; }
+
+.chips-row {
+  padding: 10px 16px; display: flex; gap: 8px; overflow-x: auto; flex-shrink: 0;
+  scrollbar-width: none;
+}
+.chips-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; background: var(--card2); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 7px 14px; font-size: 12px; font-weight: 600;
+  color: var(--text); cursor: pointer; white-space: nowrap; transition: border-color .12s;
+}
+.chip:hover { border-color: var(--fire-solid); }
+
+.chat-log { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 14px; }
+.chat-msg { display: flex; flex-direction: column; max-width: 82%; }
+.chat-msg.user { align-self: flex-end; align-items: flex-end; }
+.chat-msg.assistant { align-self: flex-start; align-items: flex-start; }
+.bubble {
+  padding: 12px 14px; border-radius: 18px; font-size: 14px; line-height: 1.55; font-weight: 500;
+}
+.chat-msg.user .bubble { background: var(--fire); color: #fff; border-bottom-right-radius: 4px; }
+.chat-msg.assistant .bubble { background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.chat-time { font-size: 10px; color: var(--muted); margin-top: 4px; padding: 0 4px; }
+
+/* Typing indicator */
+.typing-indicator {
+  display: none; align-self: flex-start; align-items: flex-start;
+}
+.typing-indicator.show { display: flex; }
+.typing-bubble {
+  background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+  border-bottom-left-radius: 4px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 4px;
+}
+.typing-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--muted);
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+.chat-input-row {
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0;
+}
+.chat-input-row textarea {
+  flex: 1; max-height: 120px; border-radius: 14px; padding: 12px 14px;
+  font-size: 14px; line-height: 1.4;
+}
+.send-btn {
+  width: 44px; height: 44px; border-radius: 12px; background: var(--fire);
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: opacity .15s;
+}
+.send-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ─────────────────────────────────────────
+   GUIDES TAB
+───────────────────────────────────────── */
+.guides-header { padding: 20px 20px 12px; }
+.guides-title { font-size: 22px; font-weight: 800; }
+.guides-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.guide-list { padding: 0 16px 24px; display: flex; flex-direction: column; gap: 10px; }
+.guide-card {
+  background: var(--card); border-radius: 16px; padding: 16px;
+  border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 14px;
+  transition: border-color .12s;
+}
+.guide-card:active { border-color: var(--fire-solid); }
+.guide-icon {
+  width: 44px; height: 44px; border-radius: 12px; background: var(--fire);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+}
+.guide-icon.rose { background: var(--rose); }
+.guide-icon.violet { background: var(--violet); }
+.guide-info { flex: 1; }
+.guide-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.guide-preview { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.guide-arrow { color: var(--muted); }
+
+/* Bottom sheet */
+.sheet-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 100;
+  display: none; align-items: flex-end;
+}
+.sheet-overlay.show { display: flex; }
+.sheet {
+  width: 100%; max-width: 480px; margin: 0 auto;
+  background: var(--card); border-radius: 24px 24px 0 0;
+  padding: 0 0 32px; max-height: 85vh; overflow-y: auto;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: var(--border); margin: 12px auto; }
+.sheet-header { padding: 4px 20px 16px; }
+.sheet-title { font-size: 20px; font-weight: 800; }
+.sheet-body { padding: 0 20px; font-size: 14px; color: var(--muted); line-height: 1.8; }
+.sheet-body p { margin-bottom: 14px; }
+.sheet-body h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 18px 0 6px; }
+
+/* ─────────────────────────────────────────
+   PROFILE TAB
+───────────────────────────────────────── */
+.profile-top { padding: 24px 20px 0; display: flex; flex-direction: column; align-items: center; }
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 50%; background: var(--fire);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 12px;
+}
+.profile-name { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.profile-plan { display: inline-flex; align-items: center; gap: 6px; background: var(--fire); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700; color: #fff; }
+
+.stats-row {
+  display: flex; margin: 20px 20px 0; background: var(--card2);
+  border-radius: 16px; border: 1px solid var(--border); overflow: hidden;
+}
+.stat-item { flex: 1; padding: 16px 0; text-align: center; }
+.stat-item + .stat-item { border-left: 1px solid var(--border); }
+.stat-value { font-size: 22px; font-weight: 800; }
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 600; }
+
+.upgrade-banner {
+  margin: 16px 20px 0; background: var(--fire); border-radius: 16px;
+  padding: 16px; display: flex; align-items: center; gap: 12px;
+}
+.upgrade-text { flex: 1; }
+.upgrade-title { font-size: 14px; font-weight: 800; color: #fff; }
+.upgrade-sub { font-size: 12px; color: rgba(255,255,255,.8); margin-top: 2px; }
+.upgrade-btn { background: rgba(255,255,255,.2); border: none; border-radius: 10px; padding: 8px 14px; color: #fff; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+
+.profile-section-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; padding: 20px 20px 8px; }
+
+.mode-selector { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+.mode-row {
+  background: var(--card2); border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1.5px solid var(--border);
+  transition: border-color .12s;
+}
+.mode-row.selected { border-color: var(--fire-solid); }
+.mode-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.mode-dot.fire { background: var(--fire-solid); }
+.mode-dot.rose { background: var(--rose-solid); }
+.mode-dot.violet { background: var(--violet-solid); }
+.mode-row-label { flex: 1; font-size: 14px; font-weight: 600; }
+.check-icon { color: var(--fire-solid); display: none; }
+.mode-row.selected .check-icon { display: block; }
+
+.settings-list { padding: 0 16px 24px; display: flex; flex-direction: column; gap: 6px; }
+.settings-row {
+  background: var(--card2); border-radius: 12px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.settings-row-icon { color: var(--muted); }
+.settings-row-label { flex: 1; font-size: 14px; font-weight: 600; }
+.settings-row-arrow { color: var(--muted); }
+.settings-row.danger .settings-row-label { color: #FF3D6B; }
+.settings-row.danger .settings-row-icon { color: #FF3D6B; }
+</style>
+</head>
+<body>
+<div id="root">
+
+<!-- ══════════════════════════════════════
+     LANDING
+══════════════════════════════════════ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-logo">⚡</div>
+  <h1 class="landing-title">Spark</h1>
+  <p class="landing-tagline">AI Life &amp; Relationship Coach</p>
+  <p class="landing-desc">Get honest, judgment-free coaching for dating, getting an ex back, or making your relationship stronger.</p>
+  <div class="landing-btns">
+    <button class="btn btn-primary" onclick="showScreen('screen-signup')">Get started free</button>
+    <button class="btn btn-outline" onclick="showScreen('screen-login')">I already have an account</button>
+  </div>
+  <div class="feature-tiles">
+    <div class="feature-tile">
+      <div class="tile-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <span class="tile-label">Dating &amp; Attraction</span>
+    </div>
+    <div class="feature-tile">
+      <div class="tile-icon rose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.93"/></svg>
+      </div>
+      <span class="tile-label">Get Them Back</span>
+    </div>
+    <div class="feature-tile">
+      <div class="tile-icon violet">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="tile-label">Couples Coaching</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SIGN UP
+══════════════════════════════════════ -->
+<div id="screen-signup" class="screen auth-screen">
+  <div class="auth-header">
+    <div class="back-btn" onclick="showScreen('screen-landing')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <span class="auth-title" id="signup-title">Create account</span>
+  </div>
+  <div class="auth-body">
+    <!-- Step indicators -->
+    <div class="step-indicators">
+      <div class="step-dot active" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div id="signup-step1">
+      <p class="auth-subtitle">Start your coaching journey.</p>
+      <div class="input-group"><label>Full name</label><input type="text" id="su-name" placeholder="Your name" /></div>
+      <div class="input-group" style="margin-top:12px"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com" /></div>
+      <div class="input-group" style="margin-top:12px"><label>Password</label><input type="password" id="su-pass" placeholder="Min 8 characters" /></div>
+      <div class="input-group" style="margin-top:12px">
+        <label>Relationship status</label>
+        <select id="su-status">
+          <option value="">Select status</option>
+          <option value="single">Single</option>
+          <option value="getback">Trying to get them back</option>
+          <option value="couple">In a relationship</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="margin-top:20px" onclick="signupNext()">Continue</button>
+      <div class="divider" style="margin-top:16px">or</div>
+      <button class="btn btn-social" style="margin-top:12px">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <button class="btn btn-social" style="margin-top:10px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Continue with Apple
+      </button>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="signup-step2" style="display:none">
+      <p class="auth-subtitle">Choose your plan.</p>
+      <div class="plan-cards">
+        <div class="plan-card" id="plan-free" onclick="selectPlan('free')">
+          <div class="plan-radio"><div class="plan-radio-dot"></div></div>
+          <div class="plan-info"><div class="plan-name">Free</div><div class="plan-price">Basic coaching, limited messages</div></div>
+          <span style="font-size:15px;font-weight:800">$0</span>
+        </div>
+        <div class="plan-card selected" id="plan-pro" onclick="selectPlan('pro')">
+          <div class="plan-radio"><div class="plan-radio-dot"></div></div>
+          <div class="plan-info"><div class="plan-name">Pro</div><div class="plan-price">Unlimited messages &amp; guides</div></div>
+          <div style="text-align:right"><div style="font-size:15px;font-weight:800">$9.99</div><div style="font-size:11px;color:var(--muted)">/mo</div></div>
+        </div>
+        <div class="plan-card" id="plan-elite" onclick="selectPlan('elite')">
+          <div class="plan-radio"><div class="plan-radio-dot"></div></div>
+          <div class="plan-info"><div class="plan-name">Elite</div><div class="plan-price">Everything + priority &amp; analytics</div></div>
+          <div style="text-align:right"><div style="font-size:15px;font-weight:800">$19.99</div><div style="font-size:11px;color:var(--muted)">/mo</div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:20px" onclick="completeSignup()">Start coaching</button>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="completeSignup()">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     LOGIN
+══════════════════════════════════════ -->
+<div id="screen-login" class="screen auth-screen">
+  <div class="auth-header">
+    <div class="back-btn" onclick="showScreen('screen-landing')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <span class="auth-title">Welcome back</span>
+  </div>
+  <div class="auth-body">
+    <p class="auth-subtitle">Sign in to continue your coaching.</p>
+    <div class="input-group"><label>Email</label><input type="email" placeholder="you@example.com" /></div>
+    <div class="input-group" style="margin-top:12px"><label>Password</label><input type="password" placeholder="Your password" /></div>
+    <button class="btn btn-primary" style="margin-top:20px" onclick="goToOnboarding()">Sign in</button>
+    <div class="divider" style="margin-top:16px">or</div>
+    <button class="btn btn-social" style="margin-top:12px">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+    <button class="btn btn-social" style="margin-top:10px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Continue with Apple
+    </button>
+    <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:16px">
+      Don't have an account? <span style="color:var(--fire-solid);font-weight:700;cursor:pointer" onclick="showScreen('screen-signup')">Sign up</span>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ONBOARDING
+══════════════════════════════════════ -->
+<div id="screen-onboarding" class="screen">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px 40px">
+    <h2 class="onboarding-title">What brings you here?</h2>
+    <p class="onboarding-sub">Choose your coaching focus. You can switch anytime.</p>
+    <div class="mode-cards">
+      <button class="mode-card fire-card" onclick="setMode('single')">
+        <span class="mode-card-icon">🔥</span>
+        <div class="mode-card-info">
+          <div class="mode-card-title">I'm Single</div>
+          <div class="mode-card-desc">Dating, attraction &amp; confidence</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="mode-card rose-card" onclick="setMode('getback')">
+        <span class="mode-card-icon">💔</span>
+        <div class="mode-card-info">
+          <div class="mode-card-title">Get Them Back</div>
+          <div class="mode-card-desc">No contact, reattraction &amp; healing</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="mode-card violet-card" onclick="setMode('couple')">
+        <span class="mode-card-icon">💜</span>
+        <div class="mode-card-info">
+          <div class="mode-card-title">We're Together</div>
+          <div class="mode-card-desc">Communication, intimacy &amp; growth</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     APP
+══════════════════════════════════════ -->
+<div id="screen-app" class="screen">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-bar-logo">
+      <div class="logo-mark">⚡</div>
+      <span class="logo-name">Spark</span>
+    </div>
+    <div class="top-bar-right">
+      <div class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="icon-btn" onclick="switchTab('tab-profile')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab content -->
+  <div class="tab-content">
+
+    <!-- HOME -->
+    <div id="tab-home" class="tab-panel active">
+      <div id="home-hero" class="home-hero">
+        <div class="hero-greeting" id="hero-greeting">Good morning</div>
+        <div class="hero-headline" id="hero-headline">Ready to level up?</div>
+        <div class="hero-mode-badge" id="hero-mode-badge">Single Mode</div>
+      </div>
+      <div class="section-header">
+        <span class="section-title">Daily Tip</span>
+      </div>
+      <div class="daily-tip">
+        <div class="tip-bar"></div>
+        <div class="tip-label">Nova says</div>
+        <div class="tip-text" id="daily-tip-text">Loading your tip...</div>
+      </div>
+      <div class="section-header" style="margin-top:8px">
+        <span class="section-title">Topics</span>
+      </div>
+      <div class="topic-grid" id="topic-grid"></div>
+      <div class="mode-switcher">
+        <div class="mode-switcher-title">Switch mode</div>
+        <div class="mode-btns">
+          <button class="mode-btn" id="mbtn-single" onclick="setMode('single')">Single</button>
+          <button class="mode-btn" id="mbtn-getback" onclick="setMode('getback')">Get Back</button>
+          <button class="mode-btn" id="mbtn-couple" onclick="setMode('couple')">Couple</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOVA CHAT -->
+    <div id="tab-nova" class="tab-panel">
+      <div class="coach-header">
+        <div class="coach-avatar">⚡<div class="online-dot"></div></div>
+        <div>
+          <div class="coach-name">Nova</div>
+          <div class="coach-status">Online now</div>
+        </div>
+      </div>
+      <div class="chips-row" id="chips-row"></div>
+      <div class="chat-log" id="chat-log">
+        <div class="chat-msg assistant">
+          <div class="bubble">Hey! I'm Nova, your personal coach. Whatever you're going through — dating, a breakup, or making your relationship stronger — I'm here. What's on your mind?</div>
+          <div class="chat-time">Just now</div>
+        </div>
+        <div class="typing-indicator" id="typing-indicator">
+          <div class="typing-bubble">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chat-input" placeholder="Ask Nova anything..." rows="1"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- GUIDES -->
+    <div id="tab-guides" class="tab-panel">
+      <div class="guides-header">
+        <div class="guides-title" id="guides-title">Guides</div>
+        <div class="guides-sub" id="guides-sub">Curated for your journey</div>
+      </div>
+      <div class="guide-list" id="guide-list"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="tab-profile" class="tab-panel">
+      <div class="profile-top">
+        <div class="profile-avatar" id="profile-avatar">J</div>
+        <div class="profile-name" id="profile-name">User</div>
+        <div class="profile-plan">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Pro Member
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-item"><div class="stat-value">7</div><div class="stat-label">Day Streak</div></div>
+        <div class="stat-item"><div class="stat-value" id="stat-sessions">0</div><div class="stat-label">Sessions</div></div>
+        <div class="stat-item"><div class="stat-value">4.9</div><div class="stat-label">Rating</div></div>
+      </div>
+      <div class="upgrade-banner">
+        <div class="upgrade-text">
+          <div class="upgrade-title">Upgrade to Elite</div>
+          <div class="upgrade-sub">Unlock priority coaching &amp; analytics</div>
+        </div>
+        <button class="upgrade-btn">Upgrade</button>
+      </div>
+      <div class="profile-section-title">Coaching mode</div>
+      <div class="mode-selector">
+        <div class="mode-row" id="pmode-single" onclick="setMode('single')">
+          <div class="mode-dot fire"></div>
+          <span class="mode-row-label">I'm Single — Dating &amp; Attraction</span>
+          <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="mode-row" id="pmode-getback" onclick="setMode('getback')">
+          <div class="mode-dot rose"></div>
+          <span class="mode-row-label">Get Them Back — No Contact &amp; Reattraction</span>
+          <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="mode-row" id="pmode-couple" onclick="setMode('couple')">
+          <div class="mode-dot violet"></div>
+          <span class="mode-row-label">We're Together — Communication &amp; Intimacy</span>
+          <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <div class="profile-section-title">Settings</div>
+      <div class="settings-list">
+        <div class="settings-row">
+          <svg class="settings-row-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span class="settings-row-label">Edit Profile</span>
+          <svg class="settings-row-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-row">
+          <svg class="settings-row-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span class="settings-row-label">Privacy &amp; Security</span>
+          <svg class="settings-row-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-row">
+          <svg class="settings-row-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="settings-row-label">Notifications</span>
+          <svg class="settings-row-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-row danger" onclick="signOut()">
+          <svg class="settings-row-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span class="settings-row-label">Sign Out</span>
+          <svg class="settings-row-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-content -->
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="switchTab('tab-home')">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" id="nav-nova" onclick="switchTab('tab-nova')">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span class="nav-label">Nova</span>
+    </button>
+    <button class="nav-item" id="nav-guides" onclick="switchTab('tab-guides')">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span class="nav-label">Guides</span>
+    </button>
+    <button class="nav-item" id="nav-profile" onclick="switchTab('tab-profile')">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Me</span>
+    </button>
+  </nav>
+</div><!-- /screen-app -->
+
+<!-- Guide bottom sheet -->
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="sheet-title"></div>
+    </div>
+    <div class="sheet-body" id="sheet-body"></div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let currentMode = 'single';
+let userName = 'User';
+let selectedPlan = 'pro';
+let chatHistory = [];
+let sessionCount = 0;
+
+// ── Mode data ──────────────────────────────────────────────────────────────
+const MODES = {
+  single: {
+    label: 'Single Mode',
+    color: '#FF6B2B',
+    gradient: 'linear-gradient(135deg,#FF6B2B,#FFB830,#FF3D6B)',
+    heroBg: 'linear-gradient(135deg,#FF6B2B 0%,#FFB830 60%,#FF3D6B 100%)',
+    heroHeadline: 'Attract who you want.',
+    iconClass: '',
+    topics: ['Build Attraction','Texting Game','First Move','First Date','Create Chemistry','Confidence'],
+    chips: ["How do I get their attention?","Are they interested in me?","What should I text them?","I got rejected — now what?","Building my confidence"],
+    tips: ["Stop chasing. Start attracting.","Confidence isn't 'I know they'll like me.' It's 'I'll be fine either way.'","Mystery is attractive.","The person who cares less has the power."],
+    guides: [
+      { title: 'The Attraction Formula', preview: 'What actually makes someone irresistible — and how to embody it.', content: `<p>Attraction isn't about looks or money. It's a set of behaviors and energy that you can develop intentionally.</p><h3>The Core Formula</h3><p>Confidence + Scarcity + Fun = Magnetic Attraction. When someone believes in themselves, doesn't chase, and enjoys their life — they become deeply attractive to others.</p><h3>Stop the Chasing Cycle</h3><p>The number one attraction-killer is over-availability. Respond to messages at your own pace. Don't rearrange your life for someone who hasn't committed to you. Have your own things going on.</p><h3>The Energy Shift</h3><p>Instead of wondering "do they like me?" ask yourself "do I like them?" This flips your energy from needy to selective — and selective is attractive.</p><h3>Action Step</h3><p>This week, do one thing every day that makes you feel genuinely good about yourself, unrelated to anyone you're pursuing.</p>` },
+      { title: 'Texting Strategy 101', preview: 'How to text in a way that builds attraction instead of killing it.', content: `<p>Most people text themselves out of attraction without realizing it. The goal of texting isn't to talk all day — it's to make them want to see you in person.</p><h3>The Golden Rules</h3><p>Match their energy. Don't double-text. Keep conversations light and fun — save depth for in-person. End conversations first when it's going well. Never text when you're anxious about the relationship.</p><h3>The Biggest Mistake</h3><p>Good morning and good night texts to someone you're not in a relationship with. It creates false intimacy and kills the chase. Save that energy for someone who's committed to you.</p><h3>What Actually Works</h3><p>Tease them. Reference inside jokes. Suggest plans. Be the one who ends the conversation on a high note. Leave them wanting more.</p><h3>Action Step</h3><p>Next time you want to text them just to "check in," wait 24 hours. If you still want to, send something fun — not a check-in.</p>` },
+      { title: 'How to Approach Anyone', preview: 'The mindset and exact words to approach with confidence.', content: `<p>Approaching someone feels scary because we've attached too much meaning to it. The approach isn't a proposal — it's just a conversation.</p><h3>The Right Frame</h3><p>You're not approaching to get something. You're approaching to see if there's something worth pursuing. This mindset removes desperation and replaces it with curiosity.</p><h3>The Three-Second Rule</h3><p>If you see someone you want to meet, act within 3 seconds. Every second you wait, your brain manufactures more reasons not to. Move before the fear solidifies.</p><h3>Opening Lines That Work</h3><p>The best openers are genuine observations, not pickup lines. "I noticed you from across the room and thought you seemed interesting" works. Be direct. Directness is rare and attractive.</p><h3>Action Step</h3><p>This week, start one genuine conversation with a stranger — not necessarily romantic. Build the muscle of initiating connection.</p>` },
+      { title: 'First Date Mastery', preview: 'How to plan, show up, and leave them wanting a second one.', content: `<p>The first date has one job: create enough positive emotion that they want to see you again. That's it.</p><h3>Planning the Date</h3><p>Skip dinner for a first date — it's too formal and too long. Do something interactive: a walk, drinks at a fun bar, mini golf, a market. Activity dates create shared experience and natural conversation.</p><h3>Your Presence is Everything</h3><p>Put your phone away. Ask questions and actually listen. Be present in the moment. The person who's fully present in a world full of distraction is magnetic.</p><h3>The Ending</h3><p>Always leave when the energy is high. Don't extend the date past its natural peak. A shorter great date beats a long mediocre one every time. Leave them wanting more.</p><h3>Action Step</h3><p>Plan a first date that involves movement or activity. No restaurants for the first meeting.</p>` },
+    ]
+  },
+  getback: {
+    label: 'Get Back Mode',
+    color: '#FF3D6B',
+    gradient: 'linear-gradient(135deg,#FF3D6B,#FF6B9D)',
+    heroBg: 'linear-gradient(135deg,#FF3D6B 0%,#FF6B9D 100%)',
+    heroHeadline: 'Become someone worth coming back to.',
+    topics: ['No Contact Rules','Become Irresistible','First Message Back','Why It Ended','Heal First','Reattraction Plan'],
+    chips: ["Should I reach out?","How long no contact?","They viewed my story","They texted me — what now?","I miss them so much"],
+    tips: ["No contact isn't a trick.","The fastest way to get them back is to genuinely stop needing them back.","They left a version of you.","Chasing kills attraction."],
+    guides: [
+      { title: 'The No Contact Rule', preview: 'Why silence is the most powerful move you can make right now.', content: `<p>No contact isn't a strategy to make them miss you — it's a strategy to give yourself the space to become someone you're genuinely proud of.</p><h3>What No Contact Actually Is</h3><p>It means zero communication: no texts, no calls, no DMs, no liking their posts, no asking mutual friends about them. Complete silence.</p><h3>Why It Works</h3><p>Chasing someone who left creates anxiety and repels them further. Distance creates mystery. People want what they can't easily have. More importantly, it gives you time to actually process and heal.</p><h3>How Long?</h3><p>Minimum 30 days for short relationships. 60-90 days for longer ones. The goal isn't to count days — it's to reach a point where you're genuinely okay whether they come back or not.</p><h3>Action Step</h3><p>Mute or unfollow them on every platform today. Not to be petty — to protect your healing.</p>` },
+      { title: 'The Glow Up Strategy', preview: 'How to use this time to become the best version of yourself.', content: `<p>The breakup hurt. But it also gave you something rare: a forced reset. Use it.</p><h3>The Physical Layer</h3><p>Start working out or intensify your current routine. Update your wardrobe. Get a haircut. These aren't about them — they're about signaling to yourself that things are different now.</p><h3>The Social Layer</h3><p>Say yes to invitations. Reconnect with friends you neglected. Make new connections. A full social life is attractive, and more importantly, it fills the void with actual meaning.</p><h3>The Internal Layer</h3><p>Read. Go to therapy if you can. Journal. Understand what you want differently in the next relationship. Who do you want to be? This is the most important layer.</p><h3>Action Step</h3><p>Write down three things you want to achieve in the next 90 days — one physical, one social, one personal. Post it where you'll see it.</p>` },
+      { title: 'When to Reach Out', preview: "How to know if it's time — and exactly what to say.", content: `<p>Reaching out too early ruins everything. Here's how to know when and how to do it right.</p><h3>Signs You're Ready</h3><p>You're genuinely okay if they don't respond. You're not reaching out to get them back — you're reaching out from a place of abundance. You have something real to say, not just a check-in.</p><h3>The First Message</h3><p>Keep it short, positive, and low-pressure. Reference something specific and genuine — a memory, something that made you think of them. Don't confess feelings. Don't apologize for everything. Don't ask to get back together in the first message.</p><h3>If They Don't Respond</h3><p>Do not send a follow-up. One message. If they want to respond, they will. Silence after the first reach-out is still information — valuable information.</p><h3>Action Step</h3><p>Write a draft of what you'd say. Don't send it. Read it again in a week and see if it still feels right.</p>` },
+      { title: 'Understanding What Happened', preview: 'The honest analysis of why relationships end — and what it means for you.', content: `<p>Understanding why things ended isn't about assigning blame. It's about learning so you don't repeat the same patterns.</p><h3>The Hard Questions</h3><p>What role did you play in the relationship dynamic? Were there patterns of neediness, avoidance, or conflict you contributed to? Were you fully yourself in the relationship, or did you shrink?</p><h3>Attachment Patterns</h3><p>Most relationship problems come from mismatched or activated attachment styles. Anxious attachment + avoidant attachment is one of the most common painful pairings. Understanding your style changes everything.</p><h3>What They Actually Left</h3><p>They left the version of you that existed in that relationship — under that stress, in that dynamic. That version isn't all of you. Growth is real.</p><h3>Action Step</h3><p>Research your attachment style. Take a free test online. It will explain a lot of patterns you've been confused by.</p>` },
+    ]
+  },
+  couple: {
+    label: 'Couple Mode',
+    color: '#8B5CF6',
+    gradient: 'linear-gradient(135deg,#8B5CF6,#A78BFA)',
+    heroBg: 'linear-gradient(135deg,#8B5CF6 0%,#A78BFA 100%)',
+    heroHeadline: 'Build a love that lasts.',
+    topics: ['Hard Conversations','Reignite the Spark','Love Languages','Conflict Resolution','Date Night Ideas','Understand Partner'],
+    chips: ["We had a bad fight","I feel disconnected","How do I bring something up?","We stopped having fun","I feel unappreciated"],
+    tips: ["The Gottman ratio: 5 positive interactions for every negative one.","Curiosity beats criticism.","Bids for connection are small.","Love is a daily choice."],
+    guides: [
+      { title: 'The 5:1 Ratio', preview: "Gottman's research-backed secret to a lasting relationship.", content: `<p>After studying thousands of couples for decades, Dr. John Gottman found one thing that predicts relationship success above almost everything else: the ratio of positive to negative interactions.</p><h3>The Magic Number</h3><p>For every one negative interaction (criticism, complaint, fight), couples need five positive interactions to maintain a healthy balance. This doesn't mean avoiding conflict — it means building enough positivity that conflict doesn't define the relationship.</p><h3>What Counts as Positive</h3><p>A smile. A compliment. A hug. Laughing together. Expressing appreciation. Showing interest in their day. Small moments of connection add up faster than you think.</p><h3>The Four Horsemen</h3><p>Gottman identified four negative patterns that predict relationship failure: contempt, criticism, defensiveness, and stonewalling. Of these, contempt — treating your partner as beneath you — is the most dangerous.</p><h3>Action Step</h3><p>For the next week, notice your ratio. When you have a negative interaction, intentionally create five positive ones before bed.</p>` },
+      { title: 'How to Fight Better', preview: 'Conflict is normal. These techniques keep it from becoming destructive.', content: `<p>The goal of a fight in a healthy relationship isn't to win — it's to understand and be understood.</p><h3>Soft Startup</h3><p>How you begin a difficult conversation determines how it ends. Start with "I feel..." instead of "You always..." One is sharing your experience; the other is an attack.</p><h3>Take Breaks When Flooded</h3><p>When your heart rate is above 100 bpm, your ability to think clearly drops dramatically. If you notice yourself getting flooded — say so. "I need 20 minutes to calm down." Then actually come back.</p><h3>Repair Attempts</h3><p>Healthy couples use repair attempts — humor, apologies, a touch on the arm — to de-escalate during arguments. These only work if both partners recognize them. Practice them when things are calm.</p><h3>Action Step</h3><p>Agree on a "pause phrase" together — something you both say when a conversation needs a break. Use it before things escalate, not after.</p>` },
+      { title: 'Keeping the Spark Alive', preview: 'Why couples drift apart — and the specific habits that prevent it.', content: `<p>The spark doesn't die because love fades. It fades because novelty, effort, and attention fade. All of these are reversible.</p><h3>The Novelty Problem</h3><p>Early in relationships, everything is new. The brain releases dopamine just from their presence. As the relationship matures, you need to actively create novelty — new experiences, challenges faced together, new conversations.</p><h3>Regular Date Nights</h3><p>Not Netflix on the couch (though that's fine sometimes). Actual dates — new restaurants, new activities, time where you're both present and the relationship is the priority for a few hours.</p><h3>Physical Affection Outside Sex</h3><p>Holding hands. Hugs that last more than two seconds. Kisses that aren't just a peck goodbye. Non-sexual touch is one of the strongest predictors of long-term relationship satisfaction.</p><h3>Action Step</h3><p>Plan one genuinely new experience together this month. Something neither of you has done before.</p>` },
+      { title: 'Love Languages Decoded', preview: "How to love your partner the way they actually receive love.", content: `<p>Dr. Gary Chapman's love languages framework is simple but transformative: people give and receive love in different ways, and mismatches create disconnection even when both people love each other.</p><h3>The Five Languages</h3><p><strong>Words of Affirmation</strong> — verbal compliments, appreciation, encouragement. <strong>Acts of Service</strong> — doing things to help your partner. <strong>Receiving Gifts</strong> — thoughtful tokens of love. <strong>Quality Time</strong> — undivided attention. <strong>Physical Touch</strong> — physical connection and affection.</p><h3>The Mismatch Problem</h3><p>If your language is Words of Affirmation but your partner's is Acts of Service, you might tell them you love them constantly while they want you to do the dishes. Both are loving — but the messages aren't landing.</p><h3>Finding Each Other's Language</h3><p>Ask your partner: "When do you feel most loved by me?" and "What do I do that makes you feel unloved?" Listen without defending.</p><h3>Action Step</h3><p>Both of you take the free love languages quiz online. Share your results and discuss one specific way each of you can speak the other's language this week.</p>` },
+    ]
+  }
+};
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+function switchTab(tabId) {
+  // Update panels
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  // Update nav
+  const map = { 'tab-home':'nav-home','tab-nova':'nav-nova','tab-guides':'nav-guides','tab-profile':'nav-profile' };
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = document.getElementById(map[tabId]);
+  if (navEl) navEl.classList.add('active');
+}
+
+// ── Auth ────────────────────────────────────────────────────────────────────
+function signupNext() {
+  const name = document.getElementById('su-name').value.trim();
+  if (name) userName = name;
+  document.getElementById('signup-step1').style.display = 'none';
+  document.getElementById('signup-step2').style.display = 'block';
+  document.getElementById('dot-1').classList.remove('active');
+  document.getElementById('dot-2').classList.add('active');
+  document.getElementById('signup-title').textContent = 'Choose a plan';
+}
+
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('plan-' + plan).classList.add('selected');
+}
+
+function completeSignup() {
+  showScreen('screen-onboarding');
+}
+
+function goToOnboarding() {
+  showScreen('screen-onboarding');
+}
+
+function signOut() {
+  chatHistory = [];
+  sessionCount = 0;
+  showScreen('screen-landing');
+}
+
+// ── Mode ────────────────────────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  const m = MODES[mode];
+
+  // Home hero
+  const hero = document.getElementById('home-hero');
+  hero.style.background = m.heroBg;
+  document.getElementById('hero-headline').textContent = m.heroHeadline;
+  document.getElementById('hero-mode-badge').textContent = m.label;
+
+  // Daily tip
+  const tips = m.tips;
+  document.getElementById('daily-tip-text').textContent = tips[Math.floor(Math.random() * tips.length)];
+
+  // Topic grid
+  const grid = document.getElementById('topic-grid');
+  grid.innerHTML = '';
+  const iconClass = mode === 'getback' ? 'rose' : mode === 'couple' ? 'violet' : '';
+  m.topics.forEach(t => {
+    grid.innerHTML += `<div class="topic-card" onclick="askTopic('${t.replace(/'/g,"\\'")}')">
+      <div class="topic-card-icon ${iconClass}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div class="topic-label">${t}</div>
+    </div>`;
+  });
+
+  // Mode switcher buttons
+  document.getElementById('mbtn-single').className = 'mode-btn' + (mode==='single'?' active-fire':'');
+  document.getElementById('mbtn-getback').className = 'mode-btn' + (mode==='getback'?' active-rose':'');
+  document.getElementById('mbtn-couple').className = 'mode-btn' + (mode==='couple'?' active-violet':'');
+
+  // Chips
+  const chipsRow = document.getElementById('chips-row');
+  chipsRow.innerHTML = '';
+  m.chips.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = c;
+    chip.onclick = () => sendChip(c);
+    chipsRow.appendChild(chip);
+  });
+
+  // Guides
+  const guideList = document.getElementById('guide-list');
+  guideList.innerHTML = '';
+  const gIconClass = mode === 'getback' ? 'rose' : mode === 'couple' ? 'violet' : '';
+  m.guides.forEach((g, i) => {
+    guideList.innerHTML += `<div class="guide-card" onclick="openGuide(${i})">
+      <div class="guide-icon ${gIconClass}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <div class="guide-info">
+        <div class="guide-title">${g.title}</div>
+        <div class="guide-preview">${g.preview}</div>
+      </div>
+      <svg class="guide-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`;
+  });
+
+  // Guides header
+  const guideIcons = { single:'🔥', getback:'💔', couple:'💜' };
+  document.getElementById('guides-title').textContent = guideIcons[mode] + ' ' + m.label + ' Guides';
+  document.getElementById('guides-sub').textContent = m.guides.length + ' guides curated for you';
+
+  // Profile mode rows
+  document.querySelectorAll('.mode-row').forEach(r => r.classList.remove('selected'));
+  document.getElementById('pmode-' + mode).classList.add('selected');
+
+  // Profile avatar / name
+  document.getElementById('profile-name').textContent = userName;
+  document.getElementById('profile-avatar').textContent = userName.charAt(0).toUpperCase();
+
+  // Show app
+  showScreen('screen-app');
+  switchTab('tab-home');
+
+  // Greeting
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('hero-greeting').textContent = greet + (userName !== 'User' ? ', ' + userName.split(' ')[0] : '');
+}
+
+// ── Guides sheet ────────────────────────────────────────────────────────────
+function openGuide(i) {
+  const guide = MODES[currentMode].guides[i];
+  document.getElementById('sheet-title').textContent = guide.title;
+  document.getElementById('sheet-body').innerHTML = guide.content;
+  document.getElementById('sheet-overlay').classList.add('show');
+}
+
+function closeSheet(e) {
+  if (e.target === document.getElementById('sheet-overlay')) {
+    document.getElementById('sheet-overlay').classList.remove('show');
+  }
+}
+
+// ── Chat ────────────────────────────────────────────────────────────────────
+function askTopic(topic) {
+  switchTab('tab-nova');
+  const msg = 'I want to learn about: ' + topic;
+  document.getElementById('chat-input').value = msg;
+  sendMessage();
+}
+
+function sendChip(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+
+function formatTime(d) {
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function appendMessage(role, text) {
+  const log = document.getElementById('chat-log');
+  const typing = document.getElementById('typing-indicator');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>')}</div><div class="chat-time">${formatTime(new Date())}</div>`;
+  log.insertBefore(div, typing);
+  log.scrollTop = log.scrollHeight;
+}
+
+function setTyping(show) {
+  const t = document.getElementById('typing-indicator');
+  t.classList.toggle('show', show);
+  const log = document.getElementById('chat-log');
+  log.scrollTop = log.scrollHeight;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  const sendBtn = document.getElementById('send-btn');
+  sendBtn.disabled = true;
+
+  chatHistory.push({ role: 'user', content: text });
+  appendMessage('user', text);
+  setTyping(true);
+
+  const systemPrompt = `You are Nova, a warm confident direct AI life and relationship coach for Spark. The user is in "${MODES[currentMode].label}" mode. Coach singles on dating/attraction, people who want their ex back on reattraction/no-contact, and couples on communication/intimacy. Style: brilliant honest best friend who's also a relationship expert. Direct, warm, zero judgment, practical. 2-4 short paragraphs, end with one action step. No bullet points. Never preachy.`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    if (data.error) {
+      appendMessage('assistant', 'Error: ' + (data.error.message || JSON.stringify(data.error)));
+    } else {
+      const reply = data.content[0].text;
+      chatHistory.push({ role: 'assistant', content: reply });
+      sessionCount++;
+      document.getElementById('stat-sessions').textContent = sessionCount;
+      appendMessage('assistant', reply);
+    }
+  } catch (err) {
+    appendMessage('assistant', 'Error: ' + err.message);
+  } finally {
+    setTyping(false);
+    sendBtn.disabled = false;
+  }
+}
+
+// ── Auto-resize textarea ────────────────────────────────────────────────────
+document.getElementById('chat-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+// ── Init ────────────────────────────────────────────────────────────────────
+// Pre-render default mode data without navigating to app
+(function init() {
+  setMode('single');
+  showScreen('screen-landing');
+})();
+</script>
+</body>
+</html>
